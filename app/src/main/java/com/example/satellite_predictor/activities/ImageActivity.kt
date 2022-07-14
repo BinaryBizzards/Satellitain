@@ -93,15 +93,15 @@ class ImageActivity : AppCompatActivity() {
 
     private fun uploadImage(Uri: Uri?) {
         Log.i("URI=", Uri.toString())
-        val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, Uri)
+        val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, Uri)
         binding.imageView2.setImageBitmap(bitmap)
 
         val root = Environment.getExternalStorageDirectory().toString()
-        Log.i("root-path",root)
+        Log.i("root-path", root)
         val myDir = File("$root/satellite_img")
         if (!myDir.exists()) {
             myDir.mkdirs()
-            Log.i("MyDir","My dir created")
+            Log.i("MyDir", "My dir created")
         }
         val generator = Random()
         var n = 10000

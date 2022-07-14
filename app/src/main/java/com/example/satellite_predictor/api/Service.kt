@@ -10,6 +10,21 @@ import java.io.File
 
 interface Service {
 
+    @Multipart
+    @POST("signup")
+    suspend fun signup(
+        @PartMap() partMap: MutableMap<String, RequestBody>
+    ): String
+
+    @Multipart
+    @POST("login")
+    suspend fun login(
+        @PartMap() partMap: MutableMap<String, RequestBody>
+    ): String
+
+    @GET("logout")
+    suspend fun logout(): String
+
     @GET("get_list")
     suspend fun getList(
         @Query("_page") page: Int = 1,

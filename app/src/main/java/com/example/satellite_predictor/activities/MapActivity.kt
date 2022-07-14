@@ -7,6 +7,8 @@ import android.graphics.drawable.BitmapDrawable
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.satellite_predictor.R
@@ -15,12 +17,14 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.*
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import java.io.IOException
 import java.util.*
+
 
 class MapActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMapBinding
@@ -80,20 +84,21 @@ class MapActivity : AppCompatActivity() {
         client.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 supportMapFragment.getMapAsync { googleMap ->
-                    val address: String = getAddress(location.latitude, location.longitude)
+                    val address = getAddress(location.latitude, location.longitude)
                     val latLng = LatLng(location.latitude, location.longitude)
                     val bitmapdraw = resources.getDrawable(R.drawable.location) as BitmapDrawable
                     val bitmap = bitmapdraw.bitmap
                     val marker = Bitmap.createScaledBitmap(bitmap, 150, 150, false)
                     val options = MarkerOptions().position(latLng).title(address)
                         .icon(BitmapDescriptorFactory.fromBitmap(marker))
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10f))
                     googleMap.addMarker(options)
-                    googleMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
+                    googleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
                 }
             }
         }
     }
+
 
     private fun getAddress(latitude: Double, longitude: Double): String {
         var ans = ""
@@ -108,11 +113,18 @@ class MapActivity : AppCompatActivity() {
             val country = addresses[0].countryName
             val postalCode = addresses[0].postalCode
             val knownName = addresses[0].featureName
-            ans = "$ans$address,$city,$state,$country,$postalCode,$knownName"
+            ans = "$ans$city,$state,$country"
         } catch (e: IOException) {
             e.printStackTrace()
         }
         return ans
     }
 
+    fun takeScreenshot(view: View) {
+        supportMapFragment.getMapAsync { map ->
+            map.snapshot(GoogleMap.SnapshotReadyCallback { bitmap ->
+                binding.satImg.setImageBitmap(bitmap)
+            })
+        }
+    }
 }
